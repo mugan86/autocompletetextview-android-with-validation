@@ -1,5 +1,6 @@
 package anartzmuxika.autocompletetextview;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -8,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,7 +23,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
 
-    AutoCompleteTextView text;
+    AutoCompleteTextView text, text2;
 
     TextView add_stateTextView;
 
@@ -157,6 +159,7 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            openDialog();
             return true;
         }
 
@@ -175,5 +178,89 @@ public class MainActivity extends AppCompatActivity {
         list.add(new Mountain("8", "Gorbeia"));
         list.add(new Mountain("9", "Anboto"));
         return list;
+    }
+
+    private void openDialog()
+    {
+// get prompts.xml view
+        LayoutInflater li = LayoutInflater.from(MainActivity.this);
+        View promptsView = li.inflate(R.layout.comment_dialog, null);
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                MainActivity.this);
+
+        // set prompts.xml to alertdialog builder
+        alertDialogBuilder.setView(promptsView);
+
+        text2=(AutoCompleteTextView) promptsView.findViewById(R.id.autoCompleteTextView2);
+
+        final List<Mountain> langs = retrieveMountain();
+
+
+
+        System.out.println("Mountains list: " + langs.size());
+
+
+
+        final MountainArrayAdapter adapter = new MountainArrayAdapter(this, R.layout.row_mountain, R.id.lbl_name, langs);
+        text2.setAdapter(adapter);
+
+        text2.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                mountain = new Mountain();
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                final String my_var = null;
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                System.out.println("LENGHT: " + s.length());
+            }
+
+        });
+
+        text2.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+
+
+                if (!hasFocus) {
+                    // code to execute when EditText loses focus
+                    if (langs.contains(mountain)) {
+                        System.out.println("Correct mountain!!!");
+
+                    } else {
+                        System.out.println("No correct mountain...");
+                        text2.setText("");
+                        text2.requestFocus();
+                    }
+                }
+            }
+        });
+
+        text2.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //Do whatever you want with the selected item
+                Log.d("TAG", adapter.getItem(position).getName() + " has been selected!");
+                mountain = adapter.getItem(position);
+
+            }
+        });
+
+        // set dialog message
+        alertDialogBuilder
+                .setTitle("Title")
+                .setCancelable(false);
+
+        // create alert dialog
+        final AlertDialog alertDialog = alertDialogBuilder.create();
+        // show it
+        alertDialog.show();
+
     }
 }
