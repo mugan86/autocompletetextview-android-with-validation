@@ -47,10 +47,6 @@ public class MainActivity extends AppCompatActivity {
         final MountainArrayAdapter adapter = new MountainArrayAdapter(this, R.layout.activity_main, R.id.lbl_name, langs);
         text.setAdapter(adapter);
 
-        text.setAdapter(adapter);
-
-
-        text.setAdapter(adapter);
         text.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
